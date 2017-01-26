@@ -4,6 +4,11 @@ package project;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +32,8 @@ import javax.mail.search.ComparisonTerm;
 
 public class EmailReader {
     private String saveDirectory;
-
+    private Connection conn = null;
+    PreparedStatement stmt = null;
     /**
      * Sets the directory where attached files will be stored.
      * 
@@ -38,17 +44,28 @@ public class EmailReader {
         this.saveDirectory = dir;
     }
 
-    /**
+    public EmailReader() throws ClassNotFoundException, SQLException {
+		Class.forName("org.h2.Driver");
+        conn = DriverManager.getConnection("jdbc:h2:mem:test-database-name");
+        //conn.prepareStatement("DROP TABLE  mail_backup").execute();
+        conn.prepareStatement("CREATE TABLE IF NOT EXISTS mail_backup (id INTEGER AUTO_INCREMENT NOT NULL, fromSender VARCHAR(100),"
+        		+ "subject VARCHAR(1000), sentDate VARCHAR(30),savedUrl VARCHAR(100), attachmentYN int);").execute();
+        
+	}
+
+	/**
      * Downloads new messages and saves attachments to disk if any.
      * 
      * @param host
      * @param port
      * @param userName
      * @param password
+     * @throws SQLException 
+     * @throws ClassNotFoundException 
      * @throws IOException
      */
     public void downloadEmailAttachments(String host, String port,
-            String userName, String password, Date startDate, Date endDate) {
+            String userName, String password, Date startDate, Date endDate) throws SQLException, ClassNotFoundException {
         Properties props = System.getProperties();
         props.setProperty("mail.store.protocol", "imaps");
         try {
@@ -77,8 +94,8 @@ public class EmailReader {
                 String contentType = msg.getContentType();
                 String messageContent = "";
                 String fileNames = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                
-                msg.writeTo(new FileOutputStream(new File(saveDirectory+"/"+fileNames+"mail.eml")));
+                String file= saveDirectory+"/"+fileNames+"mail.eml";
+                msg.writeTo(new FileOutputStream(new File(file)));
                 // store attachment file name, separated by comma
                 String attachFiles = "";
 
@@ -111,7 +128,19 @@ public class EmailReader {
                         messageContent = content.toString();
                     }
                 }
-
+                
+                //conn.prepareStatement("INSERT INTO mail_backup values (null, '//"+from+"//','//"+subject+"//',"+sentDate+",'//"+file+"//',0);").execute();
+                
+                stmt = conn.prepareStatement("INSERT INTO mail_backup (fromSender, subject,sentDate,savedUrl,attachmentYN) values (?, ?,?,?,?)");
+                //stmt.setString(1, "null");
+                stmt.setString(1, from);
+                stmt.setString(2, subject);
+                stmt.setString(3, sentDate);
+                stmt.setString(4, file);
+                stmt.setInt(5, 0);
+                stmt.executeUpdate();
+                
+                
                 // print out details of each message
                 System.out.println("Message #" + (i + 1) + ":");
                 System.out.println("\t From: " + from);
@@ -124,6 +153,11 @@ public class EmailReader {
             // disconnect
             inbox.close(false);
             store.close();
+            
+            ResultSet rs = conn.prepareStatement("SELECT * FROM mail_backup").executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt(1) + " | " + rs.getString(2));
+            }
 
         } catch (NoSuchProviderException e) {
             e.printStackTrace();

@@ -4,6 +4,7 @@
  */
 package project;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -261,7 +262,7 @@ public class index extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
 					jButton4ActionPerformed(evt);
-				} catch (ParseException e) {
+				} catch (ParseException | ClassNotFoundException | SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -387,7 +388,7 @@ public class index extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) throws ParseException {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) throws ParseException, ClassNotFoundException, SQLException {//GEN-FIRST:event_jButton4ActionPerformed
         String host = "pop.gmail.com";
         String port = "995";
         String userName = mailId.getText();
@@ -398,7 +399,15 @@ public class index extends javax.swing.JFrame {
         EmailReader receiver = new EmailReader();
         receiver.setSaveDirectory(saveDirectory);
     	EmailReader email=new EmailReader();
-        email.downloadEmailAttachments(host, port, userName, password,startDate,endDate);
+        try {
+			email.downloadEmailAttachments(host, port, userName, password,startDate,endDate);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
     }//GEN-LAST:event_jButton4ActionPerformed
 
