@@ -2,8 +2,10 @@
 package project;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,8 +13,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Address;
 import javax.mail.Folder;
@@ -24,6 +31,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.AndTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.ReceivedDateTerm;
@@ -192,5 +200,41 @@ public class EmailReader {
 			ex.printStackTrace();
 		}
 	}
+	
+	
+	public static Set<File> listf(String directoryName, ArrayList<File> files) throws Exception {
+	    File directory = new File(directoryName);
+	    Set<File> hs = new HashSet<>();
+	    // get all the files from a directory
+	    File[] fList = directory.listFiles();
+	    for (File file : fList) {
+	        if (file.isFile()) {
+	            //files.add(file);
+	            hs.add(file);
+	        } else if (file.isDirectory()) {
+	            listf(file.getAbsolutePath(), files);
+	        }
+	    }
+	    for (File file : hs) {
+	    	System.out.println(file.getName());
+	    	display(file);
+		}
+	    return hs;
+	}
+	
+	   public static void display(File emlFile) throws Exception{
+		   Properties props = System.getProperties();
+	        props.put("mail.host", "smtp.gmail.com");
+	        props.put("mail.transport.protocol", "smtp");
+	        Session mailSession = Session.getDefaultInstance(props, null);
+	        InputStream source = new FileInputStream(emlFile);
+	        MimeMessage message = new MimeMessage(mailSession, source);
+	        System.out.println("Subject : " + message.getSubject());
+	        System.out.println("From : " + message.getFrom()[0]);
+	        //System.out.println("Body : " +  message.getContent());
+	        System.out.println("filename :" + emlFile.getName());
+	        System.out.println("Path :" +  emlFile.getPath());
+	        System.out.println("--------------");
+	    }
 
 }

@@ -8,7 +8,9 @@ import java.io.File;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
@@ -590,7 +592,15 @@ public class index extends javax.swing.JFrame {
 		});
 		jButton3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButton3ActionPerformed(evt);
+				try {
+					jButton3ActionPerformed(evt);
+				} catch (ClassNotFoundException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -882,10 +892,11 @@ public class index extends javax.swing.JFrame {
 
 	}
 
-	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) throws Exception {
 
 		System.out.println("Action occured::" + evt.getActionCommand());
-
+		ArrayList<File> files = new ArrayList<>();
+		Set<File> hs = EmailReader.listf("D:/MailBackup", files);
 	}
 
 	private void jButton3MouseEntered(java.awt.event.MouseEvent evt) {
