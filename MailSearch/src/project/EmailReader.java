@@ -69,7 +69,7 @@ public class EmailReader {
         Properties props = System.getProperties();
         props.setProperty("mail.store.protocol", "imaps");
         try {
-        	String saveDirectory = "D:\\Backup";
+        	String saveDirectory = "D:\\MailBackup";
         	EmailReader receiver = new EmailReader();
             receiver.setSaveDirectory(saveDirectory);
             Session session = Session.getDefaultInstance(props, null);
@@ -94,7 +94,30 @@ public class EmailReader {
                 String contentType = msg.getContentType();
                 String messageContent = "";
                 String fileNames = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                String file= saveDirectory+"/"+fileNames+"mail.eml";
+                String year = new SimpleDateFormat("yyyy").format(new Date());
+                String month = new SimpleDateFormat("MM").format(new Date());
+                String date = new SimpleDateFormat("dd").format(new Date());
+                String finalFilePath=saveDirectory+"\\"+year+"\\"+month+"\\"+date+"\\";
+                String file= finalFilePath+"/"+fileNames+"mail.eml";
+
+				File theDir = new File(finalFilePath);
+				// if the directory does not exist, create it
+				File fileDir = new File(finalFilePath);
+				 
+				boolean b = false;
+		 
+				if (!fileDir.exists()) {
+					b = fileDir.mkdirs();
+				}
+				if (b)
+				{
+					System.out.println("Directory successfully created");
+				}
+				else
+				{
+					System.out.println("Directory exists");
+				}
+					
                 msg.writeTo(new FileOutputStream(new File(file)));
                 // store attachment file name, separated by comma
                 String attachFiles = "";
@@ -111,7 +134,7 @@ public class EmailReader {
                             // this part is attachment
                             String fileName = part.getFileName();
                             attachFiles += fileName + ", ";
-                            part.saveFile(saveDirectory + File.separator + fileName);
+                            //part.saveFile(saveDirectory + File.separator + fileName);
                         } else {
                             // this part may be the message content
                             messageContent = part.getContent().toString();

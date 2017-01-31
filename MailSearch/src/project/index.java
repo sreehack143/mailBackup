@@ -872,6 +872,7 @@ public class index extends javax.swing.JFrame {
        String port = "995";
        String userName = mailid.getText();
        String passwrd = password.getText();
+       
 /*       Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse("2014-06-30");
        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse("2017-06-01");*/
        String saveDirectory = "D:\\Backup";
