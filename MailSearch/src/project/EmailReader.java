@@ -60,16 +60,17 @@ public class EmailReader {
      * @param port
      * @param userName
      * @param password
+	 * @param selDrive 
      * @throws SQLException 
      * @throws ClassNotFoundException 
      * @throws IOException
      */
     public void downloadEmailAttachments(String host, String port,
-            String userName, String password, Date startDate, Date endDate) throws SQLException, ClassNotFoundException {
+            String userName, String password, String selDrive, Date startDate, Date endDate) throws SQLException, ClassNotFoundException {
         Properties props = System.getProperties();
         props.setProperty("mail.store.protocol", "imaps");
         try {
-        	String saveDirectory = "D:\\MailBackup";
+        	String saveDirectory = selDrive+"\\MailBackup";
         	EmailReader receiver = new EmailReader();
             receiver.setSaveDirectory(saveDirectory);
             Session session = Session.getDefaultInstance(props, null);
@@ -94,9 +95,9 @@ public class EmailReader {
                 String contentType = msg.getContentType();
                 String messageContent = "";
                 String fileNames = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                String year = new SimpleDateFormat("yyyy").format(new Date());
-                String month = new SimpleDateFormat("MM").format(new Date());
-                String date = new SimpleDateFormat("dd").format(new Date());
+                String year = new SimpleDateFormat("yyyy").format(msg.getSentDate());
+                String month = new SimpleDateFormat("MM").format(msg.getSentDate());
+                String date = new SimpleDateFormat("dd").format(msg.getSentDate());
                 String finalFilePath=saveDirectory+"\\"+year+"\\"+month+"\\"+date+"\\";
                 String file= finalFilePath+"/"+fileNames+"mail.eml";
 

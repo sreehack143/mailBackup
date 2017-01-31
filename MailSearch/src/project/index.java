@@ -872,7 +872,7 @@ public class index extends javax.swing.JFrame {
        String port = "995";
        String userName = mailid.getText();
        String passwrd = password.getText();
-       
+       String selDrive = drive.getSelectedItem().toString();
 /*       Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse("2014-06-30");
        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse("2017-06-01");*/
        String saveDirectory = "D:\\Backup";
@@ -880,7 +880,7 @@ public class index extends javax.swing.JFrame {
        receiver.setSaveDirectory(saveDirectory);
    	EmailReader email=new EmailReader();
        try {
-			email.downloadEmailAttachments(host, port, userName, passwrd,fd,td);
+			email.downloadEmailAttachments(host, port, userName, passwrd,selDrive,fd,td);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
