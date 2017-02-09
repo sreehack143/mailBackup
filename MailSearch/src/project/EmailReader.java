@@ -34,6 +34,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.AndTerm;
 import javax.mail.search.SearchTerm;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.ComparisonTerm;
 
@@ -202,7 +204,7 @@ public class EmailReader {
 	}
 	
 	
-	public static Set<File> listf(String directoryName, ArrayList<File> files) throws Exception {
+	public static Set<File> listf(String directoryName, ArrayList<File> files,JTable mails) throws Exception {
 	    File directory = new File(directoryName);
 	    Set<File> hs = new HashSet<>();
 	    // get all the files from a directory
@@ -212,17 +214,17 @@ public class EmailReader {
 	            //files.add(file);
 	            hs.add(file);
 	        } else if (file.isDirectory()) {
-	            listf(file.getAbsolutePath(), files);
+	            listf(file.getAbsolutePath(), files,mails);
 	        }
 	    }
 	    for (File file : hs) {
 	    	System.out.println(file.getName());
-	    	display(file);
+	    	display(file,mails);
 		}
 	    return hs;
 	}
 	
-	   public static void display(File emlFile) throws Exception{
+	   public static void display(File emlFile,JTable mails) throws Exception{
 		   Properties props = System.getProperties();
 	        props.put("mail.host", "smtp.gmail.com");
 	        props.put("mail.transport.protocol", "smtp");
@@ -235,6 +237,9 @@ public class EmailReader {
 	        System.out.println("filename :" + emlFile.getName());
 	        System.out.println("Path :" +  emlFile.getPath());
 	        System.out.println("--------------");
+	        DefaultTableModel model = (DefaultTableModel) mails.getModel();
+	        Object[] row={message.getFrom()[0],message.getSubject()};
+	        model.addRow( row);
 	    }
 
 }
