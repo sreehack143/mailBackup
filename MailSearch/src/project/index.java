@@ -4,7 +4,15 @@
  */
 package project;
 
+import java.awt.Desktop;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,9 +22,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
@@ -24,10 +32,43 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
  *
  * @author Deepak
  */
-public class index extends javax.swing.JFrame {
-
+public class index extends javax.swing.JFrame  implements ActionListener{
+	private JPopupMenu popupMenu;
 	private JTextField subject;
+	private JMenuItem View;
+	private JMenuItem delete;
+	private javax.swing.JCheckBox attachment1;
+	private javax.swing.JButton backup;
+	private org.jdesktop.swingx.JXDatePicker date;
+	private javax.swing.JLabel date1;
+	private javax.swing.JComboBox drive;
+	private org.jdesktop.swingx.JXDatePicker fdate;
+	private javax.swing.JTextField from;
+	private javax.swing.JLabel from1;
+	private javax.swing.JLabel from2;
+	private javax.swing.JLabel from3;
+	private javax.swing.JLabel from4;
+	private javax.swing.JLabel from5;
+	private javax.swing.JLabel from7;
+	private javax.swing.JButton jButton3;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanel2;
+	private javax.swing.JPanel jPanel4;
+	private javax.swing.JProgressBar jProgressBar1;
+	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JTabbedPane jTabbedPane1;
+	private javax.swing.JTextField mailid;
+	private javax.swing.JTable mails;
+	private javax.swing.JPasswordField password;
+	private javax.swing.JPanel search;
+	private javax.swing.JLabel subject2;
+	private javax.swing.JLabel subject3;
+	private org.jdesktop.swingx.JXDatePicker tdate;
+	private javax.swing.JTextField to;
+	private javax.swing.JLabel to1;
 
+	String file_path;
+	// End of variables declaration
 	/**
 	 * Creates new form index
 	 */
@@ -41,6 +82,7 @@ public class index extends javax.swing.JFrame {
 			}
 		}
 	}
+	 
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -136,10 +178,29 @@ public class index extends javax.swing.JFrame {
 		});
 
 		mails.setFont(new java.awt.Font("Traditional Arabic", 2, 12)); // NOI18N
-		mails.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
-
-		}, new String[] { "From", "Subject" }));
-		mails.setColumnSelectionAllowed(true);
+		mails.setModel(new javax.swing.table.DefaultTableModel(
+				new Object[][] { }, new String[] { "From", "Subject","Has attachment" }));
+		mails.setRowSelectionAllowed(true);
+		
+		mails.setToolTipText("right click for menu");
+		popupMenu = new JPopupMenu();
+		View = new JMenuItem("View");
+		delete = new JMenuItem("Delete");
+		popupMenu.add(View);
+		popupMenu.add(delete);
+		mails.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mousePressed(java.awt.event.MouseEvent evt) {
+					Point point = evt.getPoint();
+					int currentRow = mails.rowAtPoint(point);
+					file_path=(String) mails.getValueAt(currentRow, 2);
+					 ListSelectionModel model = mails.getSelectionModel();
+						model.setSelectionInterval( currentRow, currentRow );
+			}
+		});
+		mails.setComponentPopupMenu(popupMenu);
+		 View.addActionListener(this);
+		 delete.addActionListener(this);
+		
 		jScrollPane1.setViewportView(mails);
 
 		javax.swing.GroupLayout searchLayout = new javax.swing.GroupLayout(search);
@@ -424,10 +485,11 @@ public class index extends javax.swing.JFrame {
 	}
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) throws Exception {
-
+		DefaultTableModel model= (DefaultTableModel) mails.getModel();
+		model.setRowCount(0);
 		System.out.println("Action occured::" + evt.getActionCommand());
 		ArrayList<File> files = new ArrayList<>();
-		Set<File> hs = EmailReader.listf("D:/MailBackup", files);
+		Set<File> hs = EmailReader.listf("D:/MailBackup", files,mails);
 	}
 
 	private void jButton3MouseEntered(java.awt.event.MouseEvent evt) {
@@ -479,36 +541,53 @@ public class index extends javax.swing.JFrame {
 			}
 		});
 	}
+	/****************Action Listner for popupmenu***********************/
+	 @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JMenuItem menu = (JMenuItem) event.getSource();
+	        if (menu == View) {
+	            view(event);
+	        } else if (menu == delete) {
+	            delete();
+	        } 
+	    }
 
-	// Variables declaration - do not modify
-	private javax.swing.JCheckBox attachment1;
-	private javax.swing.JButton backup;
-	private org.jdesktop.swingx.JXDatePicker date;
-	private javax.swing.JLabel date1;
-	private javax.swing.JComboBox drive;
-	private org.jdesktop.swingx.JXDatePicker fdate;
-	private javax.swing.JTextField from;
-	private javax.swing.JLabel from1;
-	private javax.swing.JLabel from2;
-	private javax.swing.JLabel from3;
-	private javax.swing.JLabel from4;
-	private javax.swing.JLabel from5;
-	private javax.swing.JLabel from7;
-	private javax.swing.JButton jButton3;
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel2;
-	private javax.swing.JPanel jPanel4;
-	private javax.swing.JProgressBar jProgressBar1;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JTabbedPane jTabbedPane1;
-	private javax.swing.JTextField mailid;
-	private javax.swing.JTable mails;
-	private javax.swing.JPasswordField password;
-	private javax.swing.JPanel search;
-	private javax.swing.JLabel subject2;
-	private javax.swing.JLabel subject3;
-	private org.jdesktop.swingx.JXDatePicker tdate;
-	private javax.swing.JTextField to;
-	private javax.swing.JLabel to1;
-	// End of variables declaration
+
+	private void delete() {
+		// Code for delete
+		//System.out.println("sdgfsadf");
+		try{
+    		File file = new File(file_path);
+    		if(file.delete()){
+    			System.out.println(file.getName() + " is deleted!");
+    			ArrayList<File> files = new ArrayList<>();
+    			EmailReader.listf("D:/MailBackup", files,mails);
+    		}else{
+    			System.out.println("Delete operation is failed.");
+    		}
+    	}catch(Exception e){
+
+    		e.printStackTrace();
+
+    	}
+		
+	}
+
+
+	private void view(ActionEvent event) {
+		// code for view
+		//System.out.println("adfgfhg");
+		if (Desktop.isDesktopSupported()) {
+		    try {
+		        File myFile = new File(file_path);
+		        Desktop.getDesktop().open(myFile);
+		    } catch (IOException ex) {
+		        // no application registered for PDFs
+		    }
+		}
+	}
+	
+	/************************************************************************/
+
 }
+
