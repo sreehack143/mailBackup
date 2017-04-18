@@ -89,6 +89,7 @@ public class EmailReader {
 		props.setProperty("mail.store.protocol", "imaps");
 		try {
 			String saveDirectory = selDrive + "\\MailBackup";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 			EmailReader receiver = new EmailReader();
 			receiver.setSaveDirectory(saveDirectory);
 			Session session = Session.getDefaultInstance(props, null);
@@ -112,8 +113,7 @@ public class EmailReader {
 				String from = fromAddress[0].toString();
 				String subject = msg.getSubject();
 				String sentDate = msg.getSentDate().toString();
-				String receivedDate = msg.getReceivedDate().toString();
-
+				String receivedDate = sdf.format(msg.getReceivedDate()).toString();
 				String contentType = msg.getContentType();
 				String messageContent = "";
 				String fileNames = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
@@ -121,7 +121,7 @@ public class EmailReader {
 				String month = new SimpleDateFormat("MM").format(msg.getSentDate());
 				String date = new SimpleDateFormat("dd").format(msg.getSentDate());
 				String finalFilePath = saveDirectory + "\\" + year + "\\" + month + "\\" + date + "\\";
-				String file = finalFilePath + "/" + fileNames + "mail.eml";
+				String file = finalFilePath + "/" + receivedDate + "mail.eml";
 
 				File theDir = new File(finalFilePath);
 				// if the directory does not exist, create it
