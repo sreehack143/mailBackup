@@ -561,7 +561,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
     		File file = new File(file_path);
     		if(file.delete()){
     			System.out.println(file.getName() + " is deleted!");
-    			EmailReader.refreshTable(currentRow);
+    			EmailReader.removeTableRow(currentRow);
     			ArrayList<File> files = new ArrayList<>();
     			EmailReader.listf("D:/MailBackup", files,mails);
     		}else{

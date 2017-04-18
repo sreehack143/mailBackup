@@ -253,7 +253,7 @@ public class EmailReader {
 		model.addRow(row);
 	}
 
-	public static void refreshTable(int currentRow) {
+	public static void removeTableRow(int currentRow) {
 		if (model != null) {
 			model.removeRow(currentRow);
 		}
