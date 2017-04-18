@@ -34,6 +34,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.AndTerm;
 import javax.mail.search.SearchTerm;
+import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.mail.search.ReceivedDateTerm;
@@ -44,6 +45,7 @@ public class EmailReader {
 	private Connection conn = null;
 	PreparedStatement stmt = null;
 	static DefaultTableModel model;
+
 	/**
 	 * Sets the directory where attached files will be stored.
 	 * 
@@ -73,12 +75,13 @@ public class EmailReader {
 	 * @param userName
 	 * @param password
 	 * @param selDrive
+	 * @param jProgressBar1
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
 	public void downloadEmailAttachments(String host, String port, String userName, String password, String selDrive,
-			Date startDate, Date endDate) throws SQLException, ClassNotFoundException {
+			Date startDate, Date endDate, JProgressBar jProgressBar1) throws SQLException, ClassNotFoundException {
 		Properties props = System.getProperties();
 		props.setProperty("mail.store.protocol", "imaps");
 		try {
@@ -96,9 +99,11 @@ public class EmailReader {
 			SearchTerm andTerm = new AndTerm(olderThan, newerThan);
 			// Message[] arrayMessages = inbox.getMessages(); <--get all
 			// messages
+
 			Message[] arrayMessages = inbox.search(andTerm);
+			jProgressBar1.contains(0, arrayMessages.length);
 			for (int i = arrayMessages.length; i > 0; i--) { // from newer to
-																// older
+				jProgressBar1.setValue(i); // older
 				Message msg = arrayMessages[i - 1];
 				Address[] fromAddress = msg.getFrom();
 				String from = fromAddress[0].toString();
@@ -202,44 +207,49 @@ public class EmailReader {
 			ex.printStackTrace();
 		}
 	}
-	
-	
-	public static Set<File> listf(String directoryName, ArrayList<File> files,JTable mails) throws Exception {
-	    File directory = new File(directoryName);
-	    Set<File> hs = new HashSet<>();
-	    // get all the files from a directory
-	    model = (DefaultTableModel) mails.getModel();
-	    File[] fList = directory.listFiles();
-	    for (File file : fList) {
-	        if (file.isFile()) {
-	            //files.add(file);
-	            hs.add(file);
-	        } else if (file.isDirectory()) {
-	            listf(file.getAbsolutePath(), files,mails);
-	        }
-	    }
-	    for (File file : hs) {
-	    	System.out.println(file.getName());
-	    	display(file,mails);
+
+	public static Set<File> listf(String directoryName, ArrayList<File> files, JTable mails) throws Exception {
+		File directory = new File(directoryName);
+		Set<File> hs = new HashSet<>();
+		// get all the files from a directory
+		model = (DefaultTableModel) mails.getModel();
+		File[] fList = directory.listFiles();
+		for (File file : fList) {
+			if (file.isFile()) {
+				// files.add(file);
+				hs.add(file);
+			} else if (file.isDirectory()) {
+				listf(file.getAbsolutePath(), files, mails);
+			}
 		}
-	    return hs;
+		for (File file : hs) {
+			System.out.println(file.getName());
+			display(file, mails);
+		}
+		return hs;
 	}
-	
-	   public static void display(File emlFile,JTable mails) throws Exception{
-		   Properties props = System.getProperties();
-	        props.put("mail.host", "smtp.gmail.com");
-	        props.put("mail.transport.protocol", "smtp");
-	        Session mailSession = Session.getDefaultInstance(props, null);
-	        InputStream source = new FileInputStream(emlFile);
-	        MimeMessage message = new MimeMessage(mailSession, source);
-	        System.out.println("Subject : " + message.getSubject());
-	        System.out.println("From : " + message.getFrom()[0]);
-	        //System.out.println("Body : " +  message.getContent());
-	        System.out.println("filename :" + emlFile.getName());
-	        System.out.println("Path :" +  emlFile.getPath());
-	        System.out.println("--------------");
-	        Object[] row={message.getFrom()[0],message.getSubject(),emlFile.getPath()};
-	        model.addRow( row);
-	    }
+
+	public static void display(File emlFile, JTable mails) throws Exception {
+		Properties props = System.getProperties();
+		props.put("mail.host", "smtp.gmail.com");
+		props.put("mail.transport.protocol", "smtp");
+		Session mailSession = Session.getDefaultInstance(props, null);
+		InputStream source = new FileInputStream(emlFile);
+		MimeMessage message = new MimeMessage(mailSession, source);
+		System.out.println("Subject : " + message.getSubject());
+		System.out.println("From : " + message.getFrom()[0]);
+		// System.out.println("Body : " + message.getContent());
+		System.out.println("filename :" + emlFile.getName());
+		System.out.println("Path :" + emlFile.getPath());
+		System.out.println("--------------");
+		Object[] row = { message.getFrom()[0], message.getSubject(), emlFile.getPath() };
+		model.addRow(row);
+	}
+
+	public static void refreshTable(int currentRow) {
+		if (model != null) {
+			model.removeRow(currentRow);
+		}
+	}
 
 }

@@ -68,6 +68,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
 	private javax.swing.JLabel to1;
 
 	String file_path;
+	int currentRow;
 	// End of variables declaration
 	/**
 	 * Creates new form index
@@ -191,7 +192,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
 		mails.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
 					Point point = evt.getPoint();
-					int currentRow = mails.rowAtPoint(point);
+					currentRow = mails.rowAtPoint(point);
 					file_path=(String) mails.getValueAt(currentRow, 2);
 					 ListSelectionModel model = mails.getSelectionModel();
 						model.setSelectionInterval( currentRow, currentRow );
@@ -460,7 +461,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
 				receiver.setSaveDirectory(saveDirectory);
 				EmailReader email = new EmailReader();
 				try {
-					email.downloadEmailAttachments(host, port, userName, passwrd, selDrive, fd, td);
+					email.downloadEmailAttachments(host, port, userName, passwrd, selDrive, fd, td,jProgressBar1);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -560,6 +561,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
     		File file = new File(file_path);
     		if(file.delete()){
     			System.out.println(file.getName() + " is deleted!");
+    			EmailReader.refreshTable(currentRow);
     			ArrayList<File> files = new ArrayList<>();
     			EmailReader.listf("D:/MailBackup", files,mails);
     		}else{
