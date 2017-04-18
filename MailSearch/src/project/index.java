@@ -456,7 +456,7 @@ public class index extends javax.swing.JFrame  implements ActionListener{
 				 * endDate = new
 				 * SimpleDateFormat("yyyy-MM-dd").parse("2017-06-01");
 				 */
-				String saveDirectory = "D:\\Backup";
+				String saveDirectory = selDrive+"\\Backup";
 				EmailReader receiver = new EmailReader();
 				receiver.setSaveDirectory(saveDirectory);
 				EmailReader email = new EmailReader();

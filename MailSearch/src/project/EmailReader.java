@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.Address;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -34,6 +35,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.AndTerm;
 import javax.mail.search.SearchTerm;
+import javax.naming.AuthenticationException;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -197,7 +200,11 @@ public class EmailReader {
 				System.out.println(rs.getInt(1) + " | " + rs.getString(2));
 			}
 
-		} catch (NoSuchProviderException e) {
+		}catch (AuthenticationFailedException e){
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Authentication Failure, Please check username and password");
+		}
+		catch (NoSuchProviderException e) {
 			e.printStackTrace();
 			System.exit(1);
 		} catch (MessagingException e) {
